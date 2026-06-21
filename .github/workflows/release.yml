@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Verify ARM64 runner
+        run: test "$(uname -m)" = arm64
+
+      - name: Build release package
+        env:
+          RELEASE_VERSION: ${{ github.event.release.tag_name }}
+        run: |
+          APP_VERSION="${RELEASE_VERSION#v}" ./scripts/package.sh
+
+      - name: Attach release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$RELEASE_TAG" dist/*.zip dist/*.sha256 --clobber

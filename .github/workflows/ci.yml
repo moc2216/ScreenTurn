@@ -1,0 +1,35 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify ARM64 runner
+        run: test "$(uname -m)" = arm64
+
+      - name: Run self-test
+        run: ./scripts/test.sh
+
+      - name: Build icon and app
+        run: |
+          ./scripts/build-icon.sh
+          ./scripts/build-app.sh
+
+      - name: Create release package
+        run: ./scripts/package.sh
+
+      - name: Upload package artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ScreenTurn-macos
+          path: |
+            dist/*.zip
+            dist/*.sha256
