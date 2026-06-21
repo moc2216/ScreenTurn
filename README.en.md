@@ -57,7 +57,7 @@ build/ScreenTurn.app
 Create a distributable archive from a source checkout:
 
 ```bash
-APP_VERSION=0.1.0 ./scripts/package.sh
+APP_VERSION=0.1.1 ./scripts/package.sh
 ```
 
 The archive and checksum are written to `dist/`.

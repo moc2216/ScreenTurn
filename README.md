@@ -201,7 +201,7 @@ st open
 生成 ARM64 发布包：
 
 ~~~bash
-APP_VERSION=0.1.0 ./scripts/package.sh
+APP_VERSION=0.1.1 ./scripts/package.sh
 ~~~
 
 生成的 ZIP 和校验文件位于 **dist/**。

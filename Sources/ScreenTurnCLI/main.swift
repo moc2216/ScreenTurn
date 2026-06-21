@@ -2,7 +2,7 @@ import Foundation
 import ScreenTurnCore
 
 struct ScreenTurnCLI {
-    static let version = "0.1.0"
+    static let version = "0.1.1"
 
     let arguments: [String]
     let controller = ScreenTurnController()

@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP_NAME="ScreenTurn"
-APP_VERSION="${APP_VERSION:-0.1.0}"
+APP_VERSION="${APP_VERSION:-0.1.1}"
 RELEASE_ARCH="arm64"
 DIST_DIR="$ROOT_DIR/dist"
 STAGE_DIR="$DIST_DIR/$APP_NAME-$APP_VERSION"
