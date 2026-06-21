@@ -35,15 +35,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             return
         }
 
-        if let image = NSImage(
-            systemSymbolName: "arrow.triangle.2.circlepath",
-            accessibilityDescription: "ScreenTurn"
-        ) {
-            image.isTemplate = true
-            button.image = image
-        } else {
-            button.title = "ST"
-        }
+        button.image = MenuBarIcon.makeImage()
 
         button.toolTip = "ScreenTurn"
         button.target = self
