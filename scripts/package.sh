@@ -33,7 +33,7 @@ install -m 755 "$CLI_BINARY" "$STAGE_DIR/bin/screenturn"
 ln -s screenturn "$STAGE_DIR/bin/st"
 install -m 755 "$ROOT_DIR/scripts/install.sh" "$STAGE_DIR/install.sh"
 cp "$ROOT_DIR/README.md" "$STAGE_DIR/README.md"
-cp "$ROOT_DIR/README.zh-CN.md" "$STAGE_DIR/README.zh-CN.md"
+cp "$ROOT_DIR/README.en.md" "$STAGE_DIR/README.en.md"
 cp "$ROOT_DIR/LICENSE" "$STAGE_DIR/LICENSE"
 
 APP_ARCHS="$(lipo -archs "$STAGE_DIR/$APP_NAME.app/Contents/MacOS/$APP_NAME")"

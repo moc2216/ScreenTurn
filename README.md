@@ -1,275 +1,225 @@
 # ScreenTurn
 
-> **English** | [简体中文](README.zh-CN.md)
+> [English](README.en.md) | **简体中文**
 
-ScreenTurn is a lightweight macOS menu bar app for toggling a display between landscape and portrait rotation.
+ScreenTurn 是一个轻量的 macOS 菜单栏应用，用来在横屏和竖屏之间快速切换指定显示器。
 
-It keeps the original script-friendly workflow, but wraps it in a small native app with:
+它保留了脚本工具的效率，也提供了菜单栏操作、可录入的全局快捷键、多显示器选择与恢复上次显示状态等功能。
 
-- Global hotkey toggle
-- Configurable shortcut
-- Menu bar toggle
-- Restore last display state
-- Launch at login switch
-- CLI helper: `screenturn`
-- Short CLI alias: `st`
+## 主要功能
 
-ScreenTurn uses [`displayplacer`](https://github.com/jakehilborn/displayplacer) to apply display rotation safely.
+- 菜单栏一键切换横屏和竖屏
+- 可自定义全局快捷键
+- 设置窗口直接选择目标显示器
+- 记录并恢复上一次显示状态
+- 支持开机启动
+- 提供命令行工具 **screenturn** 与短别名 **st**
+- 自动检查并安装所需的 **displayplacer**
 
-## GitHub Releases
+ScreenTurn 使用 [displayplacer](https://github.com/jakehilborn/displayplacer) 完成 macOS 显示器旋转。
 
-Release archives contain the ARM64 (Apple Silicon) app, `screenturn`, the `st` alias, and a one-command installer. They do not require Xcode Command Line Tools.
+## 下载发布版
 
-```bash
-unzip ScreenTurn-<version>-macos.zip
-cd ScreenTurn-<version>
+发布版只支持 Apple Silicon Mac，也就是 M 系列芯片的 Mac。它不需要安装 Xcode 或 Swift。
+
+从 GitHub 的 Releases 页面下载 **ScreenTurn-<版本>-macos.zip**，然后在终端运行：
+
+~~~bash
+unzip ScreenTurn-<版本>-macos.zip
+cd ScreenTurn-<版本>
 ./install.sh
-```
+~~~
 
-The installer checks for `displayplacer`, installs it with Homebrew when available, installs the app and CLI, and updates the shell `PATH` when needed. Each release also includes a `.sha256` checksum file.
+安装器会自动：
 
-The GitHub Actions workflows run tests and create a downloadable package for every push and pull request. Publishing a GitHub Release attaches the versioned archive and checksum automatically.
+- 检查 **displayplacer** 是否存在；如果安装了 Homebrew，会自动安装它
+- 安装 **ScreenTurn.app** 到 **~/Applications**
+- 安装 **screenturn** 和 **st** 到 **~/.local/bin**
+- 尝试把 **~/.local/bin** 加入终端 PATH
 
-Until a Developer ID certificate and notarization credentials are configured, release builds are unsigned. macOS may ask for confirmation the first time an app downloaded from GitHub is opened.
+每个发布包都附带同名的 **.sha256** 文件，可用于核对下载文件是否完整。
 
-## Source Requirements
+> 当前发布包没有 Apple Developer 签名和公证。macOS 首次打开从 GitHub 下载的 App 时，可能会要求你确认一次。
 
-- macOS 13 or newer
+## 源码安装
+
+如果你是从 GitHub 克隆项目源码安装，需要：
+
+- macOS 13 或更高版本
 - Xcode Command Line Tools
-- Homebrew `displayplacer`
+- Homebrew
 
-```bash
+安装依赖：
+
+~~~bash
 brew install displayplacer
-```
+~~~
 
-## Build
+然后在项目目录运行：
 
-```bash
-./scripts/build-app.sh
-```
-
-The app will be built at:
-
-```text
-build/ScreenTurn.app
-```
-
-Create a distributable archive from a source checkout:
-
-```bash
-APP_VERSION=0.1.0 ./scripts/package.sh
-```
-
-The archive and checksum are written to `dist/`.
-
-## Test
-
-```bash
-./scripts/test.sh
-```
-
-The self-test target avoids XCTest so the project can be checked on Macs that only have Xcode Command Line Tools installed.
-
-## App Icon
-
-The primary icon preserves the original ScreenTurn double-display artwork in [assets/icon-source/ScreenTurn-original-art.png](assets/icon-source/ScreenTurn-original-art.png). [scripts/render-icon.swift](scripts/render-icon.swift) places it on a clean macOS white tile before the `.icns` is generated.
-
-Rebuild the committed macOS icon after changing it:
-
-```bash
-./scripts/build-icon.sh
-```
-
-## Install
-
-```bash
+~~~bash
 ./scripts/install.sh
-```
+~~~
 
-The installer will:
+## 首次设置
 
-- Build and install `ScreenTurn.app`
-- Install `screenturn` and the short alias `st`
-- Install `displayplacer` with Homebrew if it is missing
-- Add `~/.local/bin` to common shell startup files if needed
+安装完成后，先执行：
 
-This installs:
-
-```text
-~/Applications/ScreenTurn.app
-~/.local/bin/screenturn
-~/.local/bin/st
-```
-
-Set `SCREENTURN_SKIP_DEPS=1` to skip automatic dependency installation. Set `SCREENTURN_SKIP_PATH_UPDATE=1` to skip shell `PATH` updates.
-
-Then run setup once:
-
-```bash
+~~~bash
 st doctor
 st s
 st -n
+~~~
+
+含义分别是：
+
+1. **st doctor**：检查依赖、配置和显示器状态。
+2. **st s**：自动检测当前目标显示器，并保存横竖屏参数。
+3. **st -n**：只预览下一次切换命令，不会真的旋转屏幕。
+
+随后启动 App：
+
+~~~bash
 open ~/Applications/ScreenTurn.app
-```
+~~~
 
-If you have multiple displays, inspect detected IDs and select the intended one:
+## 菜单栏使用
 
-```bash
-st ls
-st use <display-id>
-```
+- 左键点击菜单栏图标：切换屏幕方向。
+- 右键点击，或按住 Control 点击：打开菜单。
+- 菜单会显示当前屏幕方向、分辨率和当前快捷键。
+- 使用 **Launch at Login** 控制是否开机自动启动。
 
-## Usage
+## 设置快捷键和显示器
 
-- Press the global shortcut to toggle rotation.
-- Left-click the menu bar icon to toggle rotation.
-- Right-click or Control-click the menu bar icon to open the menu.
-- Use `Launch at Login` in the menu to enable or disable startup launch.
+在菜单栏中选择 **Settings...**：
 
-Default shortcut:
+1. 从 **Target Display** 下拉列表选择需要旋转的显示器。
+2. 显示器刚接入或移除时，点击旁边的刷新按钮重新检测。
+3. 点击快捷键框，再按下想使用的组合键。
+4. 点击 **Save** 保存。
 
-```text
+快捷键必须至少包含一个修饰键：Control、Option、Shift 或 Command。
+
+设置窗口打开时，ScreenTurn 会临时停用当前全局快捷键，避免录入新快捷键时误触发屏幕旋转。
+
+默认快捷键是：
+
+~~~text
 Control + Option + Command + R
-```
+~~~
 
-## Configure Shortcut
+## 多显示器
 
-Open the menu bar menu and choose `Settings...`. Select the target display, then click the shortcut field, press the desired combination, and choose `Save`.
+ScreenTurn 保存的是某一台显示器的独立配置。选择新的显示器并保存时，会同步记录它的分辨率、旋转角度、刷新率、色深、缩放和位置。
 
-Use the refresh button beside the display list when monitors are connected or disconnected. Saving a newly selected display refreshes its stored rotation, resolution, refresh rate, color depth, scaling, and origin values.
+也可以使用命令行查看与选择显示器：
 
-ScreenTurn requires at least one modifier key and temporarily disables the active global shortcut while the settings window is open, so recording a new combination cannot rotate the display accidentally.
+~~~bash
+st ls
+st use <显示器ID>
+~~~
 
-For advanced editing, open the config from the menu:
+## 恢复上一次方向
 
-```text
-Open Config
-```
+每次成功旋转前，ScreenTurn 会保存当前显示状态。
 
-Or open it directly:
+若想回到切换前的状态，可以：
 
-```bash
-open "$HOME/Library/Application Support/ScreenTurn/config.json"
-```
+- 在菜单中选择 **Restore Last Rotation**
+- 或运行：
 
-Edit the `hotKey` section:
+~~~bash
+st restore
+~~~
 
-```json
-{
-  "hotKey": {
-    "key": "R",
-    "modifiers": ["control", "option", "command"]
-  }
-}
-```
+只想先预览恢复命令：
 
-Supported modifiers:
+~~~bash
+st -n restore
+~~~
 
-```text
-control, option, shift, command
-```
+恢复成功后，恢复记录会被清除。选择另一台显示器时，旧显示器的恢复记录也会被清除。
 
-Supported keys include letters, numbers, arrows, function keys, `space`, `tab`, `return`, `escape`, and `delete`.
+## 命令行
 
-After editing, choose:
+~~~bash
+st                    # 切换屏幕方向
+st t                  # 切换屏幕方向
+st s                  # 自动检测并保存显示器配置
+st s <显示器ID>       # 为指定显示器保存配置
+st use <显示器ID>     # 选择已检测到的显示器
+st use --force <ID>   # 没有检测结果时直接保存显示器 ID
+st restore            # 恢复上一次切换前的显示状态
+st status             # 查看配置和检测到的显示器
+st ls                 # status 的短别名
+st doctor             # 检查准备状态
+st path               # 显示配置文件位置
+st open               # 打开配置文件
+st -n                 # 预览下一次切换，不实际执行
+st -n restore         # 预览恢复命令，不实际执行
+st help               # 显示帮助
+st version            # 显示版本
+~~~
 
-```text
-Reload Config
-```
+完整命令 **screenturn** 也可使用，例如：
 
-## CLI
-
-```bash
-st             # toggle rotation
-st t           # toggle rotation
-st s           # detect current display and write config
-st s <id>      # write config for a specific display
-st use <id>    # select a specific detected display
-st use --force <id> # save a display ID when detection is unavailable
-st restore     # restore the display state before the last toggle
-st status      # show config and detected displays
-st ls          # alias for status
-st doctor      # check readiness before first trial
-st path        # print config path
-st open        # open config file
-st -n          # dry run: preview displayplacer command
-st -n restore  # dry run: preview the restore command
-st help        # show help
-```
-
-The long command still works:
-
-```bash
+~~~bash
 screenturn toggle
 screenturn setup
 screenturn status
-```
+~~~
 
-Recommended first trial:
+## 配置文件
 
-```bash
-st doctor      # check displayplacer, config, hotkey, display match
-st s           # auto-detect and save target display
-st ls          # confirm the starred display is correct
-st -n          # preview the displayplacer command
-st             # apply the toggle
-```
+配置文件默认位于：
 
-After a successful toggle, ScreenTurn saves the prior display state. Use `Restore Last Rotation` in the menu or `st restore` to return to it. The restore entry is cleared after it succeeds or after selecting a different display.
-
-## Config
-
-ScreenTurn stores config at:
-
-```text
+~~~text
 ~/Library/Application Support/ScreenTurn/config.json
-```
+~~~
 
-For development or troubleshooting, you can override the config directory:
+通常应通过 **Settings...** 修改设置。需要手动排查问题时，可以在菜单中选择 **Open Config**，或运行：
 
-```bash
-SCREENTURN_CONFIG_DIR=/tmp/screenturn-config st doctor
-```
+~~~bash
+st open
+~~~
 
-Example:
+## 构建和测试
 
-```json
-{
-  "colorDepth": 8,
-  "displayID": "7787EBB5-2CC6-4199-AF58-5836F504166D",
-  "hertz": 60,
-  "hotKey": {
-    "key": "R",
-    "modifiers": [
-      "control",
-      "option",
-      "command"
-    ]
-  },
-  "landscapeDegree": 0,
-  "landscapeResolution": "1920x1080",
-  "origin": "(0,0)",
-  "portraitDegree": 270,
-  "portraitResolution": "1080x1920",
-  "scaling": "on"
-}
-```
+从源码构建 App：
 
-## Notes
+~~~bash
+./scripts/build-app.sh
+~~~
 
-If ScreenTurn picks the wrong display in a multi-display setup, run:
+运行自测：
 
-```bash
-st ls
-st use <display-id>
-```
+~~~bash
+./scripts/test.sh
+~~~
 
-You can use a detected persistent, contextual, or serial display ID. ScreenTurn stores the persistent ID in config.
+生成 ARM64 发布包：
 
-## Uninstall
+~~~bash
+APP_VERSION=0.1.0 ./scripts/package.sh
+~~~
 
-```bash
+生成的 ZIP 和校验文件位于 **dist/**。
+
+## GitHub 自动化
+
+GitHub Actions 会在每次推送代码或提交 Pull Request 时自动：
+
+1. 运行自测。
+2. 构建图标和 ARM64 App。
+3. 生成可下载的发布包。
+
+在 GitHub 创建正式 Release 时，自动化会把 ZIP 和校验文件附加到 Release 页面。
+
+## 卸载
+
+~~~bash
 ./scripts/uninstall.sh
-```
+~~~
 
-The uninstall script preserves your config file.
+卸载不会删除你的配置文件。
